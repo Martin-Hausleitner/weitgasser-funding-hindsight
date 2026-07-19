@@ -117,15 +117,46 @@ Ein Release gilt nur als bestanden, wenn:
 
 Hindsight erhält keine vollständige Rohdatenbank. Ein Konsolidierungsjob extrahiert nur freigegebene, geschäftlich wichtige Fakten (z. B. bestätigte Kundenpräferenzen, Prozessentscheidungen, Förderfristen) mit Quelle, Zeitstempel, Confidence und Löschfrist. Rechnungen, personenbezogene Roh-PDFs und vollständige E-Mail-Threads bleiben in Odoo/Documents bzw. im Archiv. Jeder Hindsight-Eintrag muss auf den Odoo-Datensatz und den Dokument-Hash zurückverweisen.
 
-## 11. Quellen und Annahmen
+## 11. Lizenz-, Hosting- und API-Tribunal (präzisiert)
+
+| Variante | OSS-Status / Lizenz | Hosting und Betrieb | Support/Upgrades | Integrationsfolgen | Tribunal-Urteil |
+|---|---|---|---|---|---|
+| **Odoo Community (self-hosted)** | Odoo bezeichnet Community als Open Source; der Community-Kern liegt im öffentlichen Repository. Drittanbieter-Module können eigene Lizenzen haben und müssen einzeln geprüft werden. | Weitgasser oder Dienstleister betreibt Linux, PostgreSQL, TLS, Backups, Monitoring, Updates und Restore-Tests. | Kein automatischer Odoo-Cloud-SLA; Support über Community/Partner oder selbst organisieren. | Vollständige Kontrolle über interne Module und Netzwerk; API-/Upgrade-Kompatibilität muss pro Zielversion geprüft werden. | **Empfohlene Pilotbasis**, wenn ein Betriebs-Owner vorhanden ist. |
+| **Odoo Enterprise on-premise** | Proprietäre Enterprise-Anwendungen und Odoo-Subscription; nicht als OSS-Angebot kalkulieren. | Eigener Server, aber Enterprise-Code/Subscription und Odoo-Bedingungen erforderlich. | Odoo-Subscription/Partner kann Support und Upgrades abdecken; Vertragsumfang prüfen. | Zusätzliche offizielle Apps können Integrationsaufwand reduzieren, aber Vendor-Bindung erhöhen. | Fallback für produktive Finance-/Localization-Anforderungen. |
+| **Odoo Online (SaaS)** | Nur Enterprise-SaaS-Angebot; nicht self-hosted und nicht Community. | Odoo betreibt Plattform; keine freie Server-/Systempaket-Kontrolle. | Odoo betreibt Updates/Hosting nach SaaS-Modell; Datenexport und Vertrags-/Regionsthemen prüfen. | Custom-Code, Systempakete und bestimmte Integrationen sind eingeschränkt; externe API-Freigaben und Planabhängigkeit beachten. | Geeignet für schnellen Pilot ohne Infrastruktur, nicht für maximale Daten-/Runtime-Kontrolle. |
+| **Odoo.sh** | Hosting/PaaS für Odoo-Projekte, keine eigene OSS-Edition; die offizielle Projektdokumentation verlangt für Kundenprojekte einen Enterprise-Plan mit Odoo.sh-Hosting. | Odoo verwaltet Container/Builds/Backups; Ressourcen, Prozesse, Systempakete und langlebige Worker sind beschränkt. | Plattform-Backups und Odoo-Versionslebenszyklus nach Odoo.sh-Policy; SLA/Region vertraglich prüfen. | Git-basierte Builds und Custom-Module möglich, aber keine beliebigen Daemons; externe Integrationen über HTTP/Queues designen. | Nur wählen, wenn Enterprise-Subscription und PaaS-Grenzen akzeptiert sind. |
+
+### API- und Automationshinweis für Odoo 20
+
+Die offizielle Odoo-19-Dokumentation weist darauf hin, dass die bisherigen XML-RPC-/JSON-RPC-Endpunkte für Odoo 20 zur Ablösung vorgesehen sind und eine JSON-2-API als Ersatz beschrieben wird. Das ist ein **Versions-/Zeitpunkt-Risiko** für den Pilot: Adapter dürfen nicht fest auf alte RPC-Endpunkte verdrahtet werden. Vor Implementierung muss die veröffentlichte Odoo-20-Dokumentation, der gewählte Tarif und die aktivierte API-Funktion gemeinsam verifiziert werden. Kein API-Schlüssel und kein Secret gehört in Git, README oder Hindsight.
+
+### OSS-/Open-Core-Alternativen für den adversarialen Vergleich
+
+| System | Einordnung | Stärken | Risiken für Weitgasser | Entscheidung |
+|---|---|---|---|---|
+| **ERPNext/Frappe** | Open Source, self-hosted | CRM, Verkauf, Einkauf, Lager, Rechnungen; flexible Framework-Erweiterung | Österreichische Steuer-/Partnerabdeckung und Migration müssen nachgewiesen werden | **Vergleichs-PoC**, nicht parallel produktiv |
+| **Dolibarr** | Open Source, modular, leichter Betrieb | CRM, Angebote, Rechnungen, Produkte/Lager; niedrige Einstiegshürde | Tiefe End-to-End-Prozesse und lokale Finance-Anforderungen ggf. weniger integriert | Kandidat für schlanken Kostenvergleich |
+| **Tryton** | Open Source, modular, ERP-orientiert | Saubere Kernmodelle, langfristig kontrollierbarer self-hosted Betrieb | Höherer Implementierungs-/Partneraufwand und weniger sofortige UI-/App-Breite | Nur bei starkem technischen Owner prüfen |
+
+Diese Alternativen sind keine Lizenz- oder Funktionsgleichheit mit Odoo. Für jedes Angebot müssen Release, Module, Maintainer, Lizenz, österreichische Lokalisierung, Backup/Restore und Support separat belegt werden.
 
 - Odoo-Dokumentation (Apps, External API, CLI/Administration): <https://www.odoo.com/documentation/>
 - Odoo Community Repository/Lizenzhinweise: <https://github.com/odoo/odoo>
+- Odoo Editions-Vergleich (Community vs. Enterprise): <https://www.odoo.com/page/editions>
+- Odoo.sh FAQ und technische Grenzen: <https://www.odoo.sh/faq>
+- Odoo External RPC/API-Hinweis (inkl. JSON-2-Migration): <https://www.odoo.com/documentation/19.0/developer/reference/external_rpc_api.html>
+- ERPNext/Frappe: <https://github.com/frappe/erpnext> und <https://github.com/frappe/frappe>
+- Dolibarr: <https://github.com/Dolibarr/dolibarr>
+- Tryton: <https://www.tryton.org/>
 - DSGVO-Grundlagen: <https://eur-lex.europa.eu/eli/reg/2016/679/oj>
 
 Die genaue Verfügbarkeit einzelner Apps und der Österreich-Lokalisierung in Odoo 20 ist vor Installation gegen die zum Zeitpunkt des Piloten veröffentlichte Dokumentation und Paketquelle zu verifizieren. Aussagen zu Steuer- und Aufbewahrungspflichten sind Prüfaufträge, keine Rechts- oder Steuerberatung.
 
-## 12. Offene Human Gates
+## 12. Quellen und Annahmen
+
+Die Quellen für Lizenz-, Hosting- und API-Aussagen sind oben verlinkt. Die genaue Verfügbarkeit einzelner Apps und der Österreich-Lokalisierung in Odoo 20 ist vor Installation gegen die zum Zeitpunkt des Piloten veröffentlichte Dokumentation und Paketquelle zu verifizieren. Aussagen zu Steuer- und Aufbewahrungspflichten sind Prüfaufträge, keine Rechts- oder Steuerberatung.
+
+## 13. Offene Human Gates
 
 1. Steuerberater bestätigt österreichische Rechnungs-/USt-Anforderungen und Nummernkreis.
 2. Weitgasser bestimmt Daten- und Prozess-Owner sowie genehmigte Benutzerrollen.
